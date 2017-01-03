@@ -1,0 +1,41 @@
+CFLAGS= -g -Wall
+CC=gcc
+AR=ar
+RANLIB=ranlib
+#CROSS_COMPILE=ppc_82xx-
+#CC=$(CROSS_COMPILE)gcc
+#AR=$(CROSS_COMPILE)ar
+#RANLIB=$(CROSS_COMPILE)ranlib
+LIBS=-L../lib 
+INCLUDE=-I../include
+
+install:all
+	cp ./main.cgi /var/www/cgi-bin -f
+	cp ./_checkPolicy /var/www/cgi-bin -f
+  
+all: status_report main.cgi _checkPolicy interface.o bo.o dfgap_cfg_act.o misc.o envfile.o misc.o common.o   
+
+status_report: interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o 
+	$(CC) status_report.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o status_report  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+
+main.cgi: interface.o  bo.o dfgap_cfg_act.o misc.o envfile.o misc.o common.o  
+	$(CC) main.cgi.c interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o  main.cgi $(LIBS) $(INCLUDE) -lmxml -lcurl -lpthread -lcgi
+
+_checkPolicy:interface.o bo.o dfgap_cfg_act.o envfile.o misc.o common.o 
+		$(CC) _checkPolicy.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o _checkPolicy  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+		
+interface.o:
+	$(CC) -g -c interface.c $(LIBS) $(INCLUDE) 
+envfile.o:
+	$(CC) -g -c envfile.c $(LIBS) $(INCLUDE) 
+common.o:
+	$(CC) -g -c common.c $(LIBS) $(INCLUDE) 
+misc.o:
+	$(CC) -g -c misc.c $(LIBS) $(INCLUDE) 
+dfgap_cfg_act.o:
+	$(CC) -g -c dfgap_cfg_act.c $(LIBS) $(INCLUDE) 
+bo.o:
+	$(CC) -g -c bo.c $(LIBS) $(INCLUDE)
+
+clean:
+	@rm -f *.o *.a *.cgi

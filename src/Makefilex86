@@ -1,0 +1,62 @@
+CFLAGS= -g -Wall
+CC=gcc
+AR=ar
+RANLIB=ranlib
+#CROSS_COMPILE=ppc_82xx-
+#CC=$(CROSS_COMPILE)gcc
+#AR=$(CROSS_COMPILE)ar
+#RANLIB=$(CROSS_COMPILE)ranlib
+LIBS=-L../lib_x86
+INCLUDE=-I../include
+install:all
+	
+	#cp ./main.cgi 		../bin -f
+	#cp ./deviceinfo.xml 	../bin -f
+	#cp ./main.cgi       	../bin -f
+	#cp ./status_report 	../bin -f
+	#cp ./_checkException     ../bin -f
+	#cp ./_checkPolicy 	../bin -f
+	#cp ./status_report.sh 	../bin -f 
+	#cp ./checkPolicy.sh 	../bin -f 
+  
+
+ 
+all: test _checkbypass _bypassException _checkException status_report main.cgi _checkPolicy interface.o bo.o dfgap_cfg_act.o misc.o envfile.o misc.o common.o  
+
+
+test: interface.o bo.o dfgap_cfg_act.o envfile.o misc.o common.o
+	$(CC) test.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o test  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+	
+_checkbypass: interface.o bo.o dfgap_cfg_act.o envfile.o misc.o common.o
+	$(CC) _checkbypass.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o _checkbypass  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+	
+_bypassException: interface.o bo.o dfgap_cfg_act.o envfile.o misc.o common.o
+	$(CC) _bypassException.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o _bypassException  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+
+_checkException: interface.o bo.o dfgap_cfg_act.o envfile.o misc.o common.o
+	$(CC) _checkException.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o _checkException  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+
+status_report: interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o 
+	$(CC) status_report.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o status_report  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+
+main.cgi: interface.o  bo.o dfgap_cfg_act.o misc.o envfile.o misc.o common.o  
+	$(CC) main.cgi.c interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o  main.cgi $(LIBS) $(INCLUDE) -lmxml -lcurl -lpthread -lcgi
+
+_checkPolicy: interface.o bo.o dfgap_cfg_act.o envfile.o misc.o common.o 
+	$(CC) _checkPolicy.c  interface.o bo.o  dfgap_cfg_act.o envfile.o misc.o common.o -g -o _checkPolicy  $(LIBS) $(INCLUDE) -lmxml  -lpthread -lcurl -lcgi
+
+interface.o:
+	$(CC) -g -c interface.c $(LIBS) $(INCLUDE) 
+envfile.o:
+	$(CC) -g -c envfile.c $(LIBS) $(INCLUDE) 
+common.o:
+	$(CC) -g -c common.c $(LIBS) $(INCLUDE) 
+misc.o:
+	$(CC) -g -c misc.c $(LIBS) $(INCLUDE) 
+dfgap_cfg_act.o:
+	$(CC) -g -c dfgap_cfg_act.c $(LIBS) $(INCLUDE) 
+bo.o:
+	$(CC) -g -c bo.c $(LIBS) $(INCLUDE)
+
+clean:
+	@rm -f *.o *.a *.cgi
